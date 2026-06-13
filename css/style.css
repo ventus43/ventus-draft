@@ -1,0 +1,483 @@
+/* ===== 공통 변수 (Trendy Dark) ===== */
+:root {
+  /* Backgrounds: 미세한 쿨톤이 섞인 다크 (Zinc/Slate 계열) */
+  --bg:      #09090b; /* 깊이감 있는 거의 블랙 (Zinc 950) */
+  --bg-card: #121214; /* 카드 배경: 배경과 은은하게 구분됨 */
+  --bg-dim:  #18181b; /* 호버/강조 배경 (Zinc 900) */
+
+  /* Borders: 자연스럽게 스며드는 선 */
+  --bd:      #27272a; /* 채도가 낮아 세련된 라인 (Zinc 800) */
+
+  /* Typography: 대비를 부드럽게 조정해 눈의 피로도 감소 */
+  --text:    #fafafa; /* 부드러운 오프화이트 (Zinc 50) */
+  --text-sub: #a1a1aa; /* 가독성 좋고 모던한 서브 텍스트 (Zinc 400) */
+  --text-dim: #52525b; /* 확실히 딤 처리된 텍스트 (Zinc 600) */
+
+  /* Shadows: 넓게 퍼지는 부드러운 고급 그림자 */
+  --shadow:  0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Nanum Gothic', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  background: var(--bg);
+  overflow: hidden;
+  color: var(--text);
+}
+
+.page {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.page.hidden { opacity: 0; pointer-events: none; transform: scale(0.98); }
+
+/* ===== 랜딩 페이지 ===== */
+#pageLanding {
+  background: url('../img/ventus.jpeg') center / cover no-repeat;
+}
+.trend-dot.active { background: rgba(255,255,255,0.95); width: 24px; border-radius: 4px; }
+
+.landing-dot-zone {
+  position: absolute;
+  top: auto;
+  bottom: 100px;
+  transform: none;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.45);
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #fff;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s, transform 0.15s;
+  font-family: inherit;
+  z-index: 10;
+}
+.landing-tap-zone {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 20%;
+  height: 100%;
+  z-index: 10;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ===== 체크리스트 페이지 ===== */
+#pageChecklist {
+  overflow-y: auto;
+  align-items: stretch;
+  background: var(--bg);
+}
+#pageChecklist .cl-wrap {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 16px 14px 100px;
+}
+
+/* 1. Hero Section */
+#pageChecklist .cl-hero {
+  background: var(--bg-card);
+  border: 1px solid var(--bd);
+  border-radius: 24px;
+  padding: 24px 20px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+#pageChecklist .cl-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: var(--text-sub);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--bd);
+  border-radius: 12px;
+  padding: 8px 14px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+#pageChecklist .cl-back:hover { background: var(--bg-dim); color: var(--text); border-color: var(--text-dim); }
+
+#pageChecklist .cl-hero-content h1 {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--text);
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+  line-height: 1.25;
+}
+#pageChecklist .cl-hero-content p {
+  font-size: 0.88rem;
+  color: var(--text-sub);
+  line-height: 1.6;
+}
+#pageChecklist .cl-hero-content strong { color: var(--text); }
+
+/* 범례(Legend) 디자인 */
+#pageChecklist .cl-legend {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--bd);
+  font-size: 0.8rem;
+  color: var(--text-sub);
+}
+#pageChecklist .legend-item { display: flex; align-items: center; gap: 5px; }
+#pageChecklist .legend-item i { font-size: 0.95rem; color: var(--text-sub); }
+#pageChecklist .legend-divider { width: 4px; height: 4px; border-radius: 50%; background: var(--text-dim); }
+
+/* 2. Bento Grid Meta Inputs */
+#pageChecklist .cl-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0 24px;
+}
+#pageChecklist .cl-field {
+  background: var(--bg-card);
+  border: 1px solid var(--bd);
+  border-radius: 16px;
+  padding: 14px 16px;
+  transition: all 0.2s ease;
+}
+#pageChecklist .field-full { grid-column: span 2; }
+#pageChecklist .cl-field:focus-within {
+  border-color: var(--text-sub);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
+}
+#pageChecklist .cl-field label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: var(--text-sub);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+#pageChecklist .cl-field label i { font-size: 0.9rem; color: var(--text-dim); }
+#pageChecklist .cl-field input {
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: inherit;
+  color: var(--text);
+  caret-color: var(--text);
+}
+#pageChecklist .cl-field input::placeholder { color: var(--text-dim); }
+#pageChecklist .cl-field input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.6);
+}
+/* 결과창 전용 딥 블렌딩 강조 */
+#pageChecklist .field-result {
+  background: linear-gradient(145deg, var(--bg-card), var(--bg-dim));
+  border-color: #3f3f46;
+}
+#pageChecklist .field-result input { color: #fff; font-weight: 700; }
+
+/* 3. Glassmorphism Topbar / Progress */
+#pageChecklist .cl-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 12px 0;
+  background: rgba(9, 9, 11, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+#pageChecklist .cl-progress-card {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+}
+#pageChecklist .cl-progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+#pageChecklist .progress-text {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text);
+}
+#pageChecklist .progress-text i { font-size: 1rem; color: var(--text-sub); }
+#pageChecklist .cl-progress-info span { font-weight: bold; color: var(--text); }
+
+#pageChecklist .cl-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+}
+#pageChecklist .cl-bar > span {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #a1a1aa, #ffffff);
+  border-radius: inherit;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#pageChecklist .cl-badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+#pageChecklist .cl-mini {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  font-weight: 600;
+  color: var(--text-sub);
+}
+#pageChecklist .cl-mini i { font-size: 0.8rem; }
+
+/* 4. Sections & Questions Inside Main */
+#pageChecklist .cl-section {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 18px;
+  margin: 16px 0;
+  border: 1px solid var(--bd);
+}
+#pageChecklist .cl-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+#pageChecklist .cl-section-title {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--text);
+  letter-spacing: -0.3px;
+}
+#pageChecklist .cl-score-pill {
+  white-space: nowrap;
+  background: var(--bg-dim);
+  border: 1px solid var(--bd);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-weight: bold;
+  font-size: 0.75rem;
+  color: var(--text-sub);
+}
+#pageChecklist .cl-question {
+  background: var(--bg-dim);
+  border-radius: 14px;
+  padding: 14px;
+  margin-top: 10px;
+  border: 1px solid var(--bd);
+}
+#pageChecklist .cl-qtext {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 12px;
+  font-weight: 500;
+  color: var(--text-sub);
+  word-break: keep-all;
+}
+#pageChecklist .cl-choices {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+}
+#pageChecklist .cl-choice { position: relative; }
+#pageChecklist .cl-choice input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+#pageChecklist .cl-choice label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 42px;
+  border-radius: 10px;
+  border: 1px solid var(--bd);
+  background: var(--bg-card);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  transition: all 0.15s ease;
+  user-select: none;
+  cursor: pointer;
+}
+#pageChecklist .cl-choice input:checked + label {
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255,255,255,0.1);
+}
+#pageChecklist .cl-choice label:active { transform: scale(0.92); }
+
+/* 5. Actions Area */
+#pageChecklist .cl-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 32px;
+}
+#pageChecklist button {
+  border: none;
+  border-radius: 14px;
+  padding: 14px 18px;
+  font-weight: bold;
+  font-size: 0.95rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+#pageChecklist .cl-btn-main {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  color: #000000;
+  font-size: 1.05rem;
+  padding: 16px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
+}
+#pageChecklist .cl-btn-main:hover:not(:disabled) { background: #e4e4e7; transform: translateY(-1px); }
+#pageChecklist .cl-btn-main:disabled {
+  background: var(--bg-dim);
+  color: var(--text-dim);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+#pageChecklist .cl-actions-row {
+  display: flex;
+  gap: 10px;
+}
+#pageChecklist .cl-actions-row button {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+}
+#pageChecklist .cl-btn-sub {
+  background: transparent;
+  color: var(--text-sub);
+  border: 1px solid var(--bd);
+}
+#pageChecklist .cl-btn-sub:hover { background: var(--bg-card); color: var(--text); border-color: var(--text-sub); }
+
+/* ===== 차트 오버레이 ===== */
+.cl-chart-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 1000;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.cl-chart-overlay.active { display: flex; }
+
+.cl-chart-sheet {
+  background: #0e0e11;
+  border-top: 1px solid var(--bd);
+  border-radius: 24px 24px 0 0;
+  padding: 24px 20px 48px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+}
+.cl-chart-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.cl-chart-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--text);
+  letter-spacing: -0.3px;
+}
+.cl-chart-canvas-wrap {
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+}
+.cl-chart-rank {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 20px 0 0;
+}
+.cl-chart-rank-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--bd);
+  border-radius: 14px;
+  padding: 12px 16px;
+}
+.cl-chart-rank-medal { font-size: 1.3rem; line-height: 1; }
+.cl-chart-rank-name  { flex: 1; font-weight: bold; color: var(--text); font-size: 0.95rem; }
+.cl-chart-rank-score { font-weight: bold; color: var(--text-sub); font-size: 0.9rem; }
+
+.cl-chart-btns { display: flex; gap: 10px; margin-top: 20px; }
+.cl-chart-btn-sub {
+  flex: 1;
+  padding: 14px 16px;
+  background: transparent;
+  color: var(--text-sub);
+  border: 1px solid var(--bd);
+  border-radius: 14px;
+  font-weight: bold;
+  font-size: 0.95rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.cl-chart-btn-sub:hover { background: var(--bg-dim); color: var(--text); border-color: var(--text-sub); }
