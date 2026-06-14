@@ -77,8 +77,9 @@ body {
 
 /* ===== 체크리스트 페이지 ===== */
 #pageChecklist {
+  display: block;        /* .page의 flex 무력화 — flex-shrink로 콘텐츠가 눌려 하단 버튼 클릭 불가 현상 방지 */
   overflow-y: auto;
-  align-items: stretch;
+  -webkit-overflow-scrolling: touch;
   background: var(--bg);
 }
 #pageChecklist .cl-wrap {
@@ -97,7 +98,14 @@ body {
   position: relative;
   overflow: hidden;
 }
-#pageChecklist .cl-back {
+#pageChecklist .cl-hero-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+#pageChecklist .cl-back,
+#pageChecklist .cl-reset-top {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -109,12 +117,12 @@ body {
   border-radius: 12px;
   padding: 8px 14px;
   cursor: pointer;
-  margin-bottom: 20px;
   font-family: inherit;
   transition: all 0.2s ease;
   -webkit-tap-highlight-color: transparent;
 }
-#pageChecklist .cl-back:hover { background: var(--bg-dim); color: var(--text); border-color: var(--text-dim); }
+#pageChecklist .cl-back:hover,
+#pageChecklist .cl-reset-top:hover { background: var(--bg-dim); color: var(--text); border-color: var(--text-dim); }
 
 #pageChecklist .cl-hero-content h1 {
   font-size: 1.8rem;
@@ -380,26 +388,20 @@ body {
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
 }
-#pageChecklist .cl-btn-main:hover:not(:disabled) { background: #e4e4e7; transform: translateY(-1px); }
-#pageChecklist .cl-btn-main:disabled {
+#pageChecklist .cl-btn-main:hover:not(.cl-btn-main--pending) { background: #e4e4e7; transform: translateY(-1px); }
+#pageChecklist .cl-btn-main--pending {
   background: var(--bg-dim);
-  color: var(--text-dim);
+  color: var(--text-sub);
   box-shadow: none;
-  cursor: not-allowed;
 }
+#pageChecklist .cl-btn-main--pending:hover { background: var(--bg-card); color: var(--text); transform: none; }
 
-#pageChecklist .cl-actions-row {
-  display: flex;
-  gap: 10px;
-}
-#pageChecklist .cl-actions-row button {
-  flex: 1;
+#pageChecklist .cl-btn-sub {
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 6px;
-}
-#pageChecklist .cl-btn-sub {
   background: transparent;
   color: var(--text-sub);
   border: 1px solid var(--bd);
@@ -481,6 +483,40 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 .cl-chart-btn-sub:hover { background: var(--bg-dim); color: var(--text); border-color: var(--text-sub); }
+
+/* FAB — 맨 위로 */
+.cl-fab-top {
+  position: fixed;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--bd);
+  border: 1px solid var(--bd);
+  color: var(--text-sub);
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 200;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  transition: all 0.2s ease;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.cl-fab-top:hover { background: var(--bg-dim); color: var(--text); border-color: var(--text-sub); transform: translateY(-2px); }
+
+/* 미체크 문항 하이라이트 */
+#pageChecklist .cl-question--highlight {
+  border-color: rgba(255, 255, 255, 0.35);
+  animation: highlightPulse 0.55s ease 3;
+}
+@keyframes highlightPulse {
+  0%, 100% { background: var(--bg-dim); }
+  50%       { background: rgba(255, 255, 255, 0.07); }
+}
 
 /* ===== 반응형 ===== */
 

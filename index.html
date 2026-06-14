@@ -24,10 +24,16 @@
 
     <!-- 1. Hero Section -->
     <section class="cl-hero">
-      <button class="cl-back" onclick="hideChecklist()">
-        <i class="ph ph-arrow-left"></i>
-        <span>돌아가기</span>
-      </button>
+      <div class="cl-hero-nav">
+        <button class="cl-back" onclick="hideChecklist()">
+          <i class="ph ph-arrow-left"></i>
+          <span>돌아가기</span>
+        </button>
+        <button class="cl-reset-top" id="clResetTopBtn" type="button">
+          <i class="ph ph-arrow-counter-clockwise"></i>
+          <span>초기화</span>
+        </button>
+      </div>
 
       <div class="cl-hero-content">
         <h1>유형 체크지</h1>
@@ -89,17 +95,16 @@
       <button class="cl-btn-main" id="clSubmitBtn" type="button">
         결과 제출하기 <i class="ph ph-paper-plane-right"></i>
       </button>
-      <div class="cl-actions-row">
-        <button class="cl-btn-sub" id="clResetBtn" type="button">
-          <i class="ph ph-arrow-counter-clockwise"></i> 초기화
-        </button>
-        <button class="cl-btn-sub" id="clTopBtn" type="button">
-          <i class="ph ph-arrow-up"></i> 맨 위로
-        </button>
-      </div>
+      <button class="cl-btn-sub" id="clResetBtn" type="button">
+        <i class="ph ph-arrow-counter-clockwise"></i> 초기화
+      </button>
     </div>
 
   </div>
+
+  <button class="cl-fab-top" id="clTopBtn" type="button" aria-label="맨 위로">
+    <i class="ph ph-arrow-up"></i>
+  </button>
 </div>
 
 <!-- 체크리스트 결과 차트 -->

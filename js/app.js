@@ -131,12 +131,13 @@ function clUpdateSummary() {
   $('clProgressBar').style.width   = `${percent}%`;
 
   const submitBtn = $('clSubmitBtn');
-  if (percent < 100) {
-    submitBtn.disabled = true;
-    submitBtn.textContent = `결과 제출 (${clTotalQuestions - answeredCount}문항 남음)`;
+  const remaining = clTotalQuestions - answeredCount;
+  if (remaining > 0) {
+    submitBtn.innerHTML = `${remaining}문항 남음 <i class="ph ph-arrow-circle-down"></i>`;
+    submitBtn.classList.add('cl-btn-main--pending');
   } else {
-    submitBtn.disabled = false;
-    submitBtn.textContent = '결과 제출';
+    submitBtn.innerHTML = `결과 제출하기 <i class="ph ph-paper-plane-right"></i>`;
+    submitBtn.classList.remove('cl-btn-main--pending');
   }
 
   sectionScores.forEach(score => {
@@ -255,8 +256,35 @@ function showChecklist() {
 }
 
 function hideChecklist() {
+  document.querySelectorAll("#clSections input[type=radio]").forEach(input => { input.checked = false; });
+  localStorage.removeItem(CL_STORAGE_KEY);
+  $('clCheckDate').value = clNowLocalValue();
+  $('clUserName').value  = "";
+  $('clMbti').value      = "";
+  clUpdateSummary();
   hidePage('pageChecklist');
   showPage('pageLanding');
+}
+
+function scrollToFirstUnchecked() {
+  const page = $('pageChecklist');
+  for (const section of CL_SECTIONS) {
+    for (let idx = 0; idx < section.items.length; idx++) {
+      const name = `s${section.id}q${idx + 1}`;
+      if (!document.querySelector(`input[name="${name}"]:checked`)) {
+        const input = document.querySelector(`input[name="${name}"]`);
+        if (!input) continue;
+        const question = input.closest('.cl-question');
+        if (!question) continue;
+        const pageRect = page.getBoundingClientRect();
+        const qRect = question.getBoundingClientRect();
+        page.scrollTo({ top: qRect.top - pageRect.top + page.scrollTop - 130, behavior: 'smooth' });
+        question.classList.add('cl-question--highlight');
+        setTimeout(() => question.classList.remove('cl-question--highlight'), 2000);
+        return;
+      }
+    }
+  }
 }
 
 /* ===================================================
@@ -271,6 +299,11 @@ clUpdateSummary();
 });
 
 $('clSubmitBtn').addEventListener("click", function() {
+  const { answers } = clComputeScores();
+  if (Object.keys(answers).length < clTotalQuestions) {
+    scrollToFirstUnchecked();
+    return;
+  }
   clSendToSheet();
   showRadarChart();
 });
@@ -282,4 +315,5 @@ $('clChartCloseBtn').addEventListener('click', function() {
 });
 
 $('clResetBtn').addEventListener("click", clResetAll);
+$('clResetTopBtn').addEventListener("click", clResetAll);
 $('clTopBtn').addEventListener("click", () => $('pageChecklist').scrollTo({ top: 0, behavior: 'smooth' }));
