@@ -1,4 +1,4 @@
-const APPS_SCRIPT_URL = process.env.APPS_SCRIPT_URL || '';
+const APPS_SCRIPT_URL = (typeof process !== 'undefined' ? process.env.APPS_SCRIPT_URL : '') || '';
 
 const answers = { q1: '', q2: [], q3: [], q4: '', q5: '', q6: '', q7: '', q8: '' };
 const TOTAL = 7;

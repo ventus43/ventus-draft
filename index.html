@@ -10,15 +10,14 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #080808;
-      --surface: #111111;
-      --surface-2: #1a1a1a;
-      --border: #222222;
-      --border-hover: #444444;
-      --text: #ffffff;
-      --text-muted: #888888;
-      --text-dim: #444444;
-      --accent: #ffffff;
+      --bg: #e0deda;
+      --surface: #fffefb;
+      --surface-2: #f5f3ef;
+      --border: #cac7c2;
+      --border-hover: #8a8882;
+      --text: #0d0c0b;
+      --text-muted: #74716d;
+      --text-dim: #b0ada8;
     }
 
     body {
@@ -29,19 +28,34 @@
       display: flex;
       justify-content: center;
       align-items: flex-start;
+      position: relative;
+    }
+
+    /* grain texture */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: -50%;
+      width: 200%; height: 200%;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.04;
+      pointer-events: none;
+      z-index: 9999;
     }
 
     .survey-wrap {
       width: 100%;
       max-width: 640px;
       padding: 64px 24px 80px;
+      position: relative;
+      z-index: 1;
     }
 
     /* ── Progress ── */
     .progress-bar-container {
       width: 100%;
       height: 1px;
-      background-color: #1e1e1e;
+      background-color: var(--border);
       margin-bottom: 56px;
     }
     .progress-bar {
@@ -92,15 +106,15 @@
     /* ── Notice box ── */
     .notice {
       padding: 16px 18px;
-      background-color: var(--surface);
+      background-color: var(--surface-2);
       border: 1px solid var(--border);
       border-radius: 10px;
       font-size: 13.5px;
-      color: #777777;
+      color: var(--text-muted);
       line-height: 1.75;
       margin-bottom: 28px;
     }
-    .notice strong { color: #bbbbbb; }
+    .notice strong { color: var(--text); }
 
     /* ── Option labels (radio / checkbox) ── */
     .option-label {
@@ -114,7 +128,7 @@
       background-color: var(--surface);
       font-size: 15px;
       font-weight: 500;
-      color: #bbbbbb;
+      color: var(--text-muted);
       cursor: pointer;
       user-select: none;
       transition: border-color 0.18s, background-color 0.18s, color 0.18s;
@@ -126,23 +140,23 @@
     .option-label.selected {
       border-color: var(--text);
       background-color: var(--text);
-      color: #000000;
+      color: #f5f3ef;
     }
 
     /* Radio dot */
     .radio-ring {
       width: 20px; height: 20px;
-      border: 1.5px solid #444;
+      border: 1.5px solid var(--border);
       border-radius: 50%;
       flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
       transition: border-color 0.18s;
     }
-    .option-label.selected .radio-ring { border-color: #000; }
+    .option-label.selected .radio-ring { border-color: #f5f3ef; }
     .radio-dot {
       width: 8px; height: 8px;
       border-radius: 50%;
-      background: #000;
+      background: #f5f3ef;
       display: none;
     }
     .option-label.selected .radio-dot { display: block; }
@@ -150,15 +164,15 @@
     /* Checkbox */
     .check-box {
       width: 20px; height: 20px;
-      border: 1.5px solid #444;
+      border: 1.5px solid var(--border);
       border-radius: 5px;
       flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
       transition: all 0.18s;
     }
     .option-label.selected .check-box {
-      border-color: #000;
-      background-color: #000;
+      border-color: #f5f3ef;
+      background-color: transparent;
     }
     .check-icon { display: none; }
     .option-label.selected .check-icon { display: block; }
@@ -185,12 +199,11 @@
       transition: border-color 0.2s;
     }
     .input-field::placeholder { color: var(--text-dim); }
-    .input-field:focus { outline: none; border-color: #555; }
-    input[type="date"] { color-scheme: dark; }
+    .input-field:focus { outline: none; border-color: var(--border-hover); }
 
     .error-msg {
       font-size: 12.5px;
-      color: #ff5555;
+      color: #c0392b;
       margin-top: 8px;
     }
 
@@ -200,7 +213,7 @@
       align-items: center;
       gap: 8px;
       background-color: var(--text);
-      color: #000000;
+      color: #f5f3ef;
       border: none;
       padding: 16px 30px;
       font-size: 15px;
@@ -209,12 +222,12 @@
       cursor: pointer;
       font-family: inherit;
       letter-spacing: -0.01em;
-      transition: background-color 0.18s, transform 0.15s;
+      transition: opacity 0.18s, transform 0.15s;
       margin-top: 8px;
     }
-    .btn:hover { background-color: #e0e0e0; transform: translateY(-1px); }
+    .btn:hover { opacity: 0.82; transform: translateY(-1px); }
     .btn:active { transform: translateY(0); }
-    .btn:disabled { opacity: 0.45; pointer-events: none; }
+    .btn:disabled { opacity: 0.35; pointer-events: none; }
 
     /* ── Intro ── */
     .badge {
@@ -222,24 +235,24 @@
       align-items: center;
       gap: 6px;
       padding: 6px 14px;
-      border: 1px solid #2a2a2a;
+      border: 1px solid var(--border);
       border-radius: 100px;
       font-size: 11px;
       font-weight: 700;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: #555;
+      color: var(--text-dim);
       margin-bottom: 36px;
     }
     .badge-dot {
       width: 6px; height: 6px;
       border-radius: 50%;
-      background: #ffffff;
+      background: var(--text);
       animation: pulse 2s ease-in-out infinite;
     }
     @keyframes pulse {
       0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
+      50% { opacity: 0.25; }
     }
 
     .intro-title {
@@ -248,8 +261,8 @@
       line-height: 1.18;
       letter-spacing: -0.04em;
       margin-bottom: 28px;
+      color: var(--text);
     }
-    .intro-title .accent { color: #ffffff; }
 
     .intro-meta {
       display: flex;
@@ -259,7 +272,7 @@
     }
     .intro-meta-item {
       font-size: 13px;
-      color: #555;
+      color: var(--text-dim);
       display: flex;
       align-items: center;
       gap: 6px;
@@ -268,7 +281,7 @@
       content: '';
       width: 4px; height: 4px;
       border-radius: 50%;
-      background: #333;
+      background: var(--border);
     }
 
     /* ── Outro ── */
@@ -281,6 +294,7 @@
       margin-bottom: 36px;
       display: block;
       letter-spacing: -0.05em;
+      color: var(--text);
     }
     .outro-title {
       font-size: 38px;
@@ -295,13 +309,13 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.88);
+      background: rgba(180,177,172,0.55);
       z-index: 200;
       align-items: center;
       justify-content: center;
       padding: 20px;
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
     }
     .modal-overlay.open { display: flex; }
 
@@ -311,7 +325,7 @@
     }
     .modal-box {
       background: var(--surface);
-      border: 1px solid #222;
+      border: 1px solid var(--border);
       border-radius: 16px;
       padding: 36px;
       width: 100%;
@@ -319,6 +333,7 @@
       max-height: 88vh;
       overflow-y: auto;
       animation: modalIn 0.3s ease;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.12);
     }
     .modal-title {
       font-size: 17px;
@@ -337,19 +352,19 @@
     .privacy-table th,
     .privacy-table td {
       padding: 11px 14px;
-      border: 1px solid #1e1e1e;
+      border: 1px solid var(--border);
       text-align: left;
       vertical-align: top;
     }
     .privacy-table th {
-      background: #0d0d0d;
-      color: #666;
+      background: var(--surface-2);
+      color: var(--text-muted);
       font-weight: 600;
       width: 36%;
     }
     .privacy-table td {
       background: var(--surface);
-      color: #bbb;
+      color: var(--text);
     }
 
     .agree-label {
@@ -359,12 +374,12 @@
       cursor: pointer;
       font-size: 14px;
       font-weight: 600;
-      color: #bbb;
+      color: var(--text-muted);
       margin-bottom: 28px;
     }
     .agree-label input {
       width: 17px; height: 17px;
-      accent-color: #fff;
+      accent-color: var(--text);
       cursor: pointer;
     }
 
@@ -375,8 +390,8 @@
     }
     .btn-cancel {
       background: transparent;
-      color: #666;
-      border: 1px solid #2a2a2a;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
       padding: 12px 22px;
       border-radius: 8px;
       font-size: 14px;
@@ -385,10 +400,10 @@
       font-family: inherit;
       transition: all 0.18s;
     }
-    .btn-cancel:hover { border-color: #444; color: #aaa; }
+    .btn-cancel:hover { border-color: var(--border-hover); color: var(--text); }
     .btn-confirm {
-      background: #fff;
-      color: #000;
+      background: var(--text);
+      color: #f5f3ef;
       border: none;
       padding: 12px 22px;
       border-radius: 8px;
@@ -396,9 +411,9 @@
       font-weight: 700;
       cursor: pointer;
       font-family: inherit;
-      transition: background 0.18s;
+      transition: opacity 0.18s;
     }
-    .btn-confirm:hover { background: #e0e0e0; }
+    .btn-confirm:hover { opacity: 0.8; }
 
     /* ── Responsive ── */
     @media (max-width: 480px) {
@@ -422,7 +437,7 @@
   <div class="step active" id="step-0">
     <div class="badge"><span class="badge-dot"></span>Ventus Survey 2026</div>
     <h1 class="intro-title">문화티켓<br>월구독권<br>서비스 기획</h1>
-    <p class="desc">문화플랫폼 <strong style="color:#fff">벤투스</strong>에서 2030 청년들을 대상으로 문화티켓 월구독권 서비스를 기획 중입니다‼️
+    <p class="desc">문화플랫폼 <strong style="color:#0d0c0b">벤투스</strong>에서 2030 청년들을 대상으로 문화티켓 월구독권 서비스를 기획 중입니다‼️
 
       여러분이 더 가까이에서 즐겁고 유익한 여가를 즐길 수 있도록 만들어가고자 합니다 😃</p>
     <div class="intro-meta">
@@ -603,7 +618,7 @@
       </tr>
       <tr>
         <th>보유 및 이용기간</th>
-        <td><strong style="color:#ddd">당첨자 발표 후 1달간 보관</strong></td>
+        <td><strong>당첨자 발표 후 1달간 보관</strong></td>
       </tr>
       </tbody>
     </table>
