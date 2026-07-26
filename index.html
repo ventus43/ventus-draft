@@ -2,127 +2,623 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Ventus</title>
-  <link rel="manifest" href="manifest.json">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Ventus">
-  <link rel="apple-touch-icon" href="icon.png">
-  <link rel="stylesheet" href="css/style.css">
-  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>벤투스 × 문화티켓 월구독권 설문조사</title>
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #080808;
+      --surface: #111111;
+      --surface-2: #1a1a1a;
+      --border: #222222;
+      --border-hover: #444444;
+      --text: #ffffff;
+      --text-muted: #888888;
+      --text-dim: #444444;
+      --accent: #ffffff;
+    }
+
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .survey-wrap {
+      width: 100%;
+      max-width: 640px;
+      padding: 64px 24px 80px;
+    }
+
+    /* ── Progress ── */
+    .progress-bar-container {
+      width: 100%;
+      height: 1px;
+      background-color: #1e1e1e;
+      margin-bottom: 56px;
+    }
+    .progress-bar {
+      height: 100%;
+      background-color: var(--text);
+      width: 0%;
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ── Step transitions ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .step { display: none; }
+    .step.active {
+      display: block;
+      animation: fadeUp 0.45s ease forwards;
+    }
+
+    /* ── Typography ── */
+    .step-num {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 26px;
+      font-weight: 800;
+      line-height: 1.38;
+      letter-spacing: -0.025em;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .desc {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.75;
+      margin-bottom: 36px;
+      white-space: pre-line;
+    }
+
+    /* ── Notice box ── */
+    .notice {
+      padding: 16px 18px;
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 13.5px;
+      color: #777777;
+      line-height: 1.75;
+      margin-bottom: 28px;
+    }
+    .notice strong { color: #bbbbbb; }
+
+    /* ── Option labels (radio / checkbox) ── */
+    .option-label {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 17px 20px;
+      margin-bottom: 8px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background-color: var(--surface);
+      font-size: 15px;
+      font-weight: 500;
+      color: #bbbbbb;
+      cursor: pointer;
+      user-select: none;
+      transition: border-color 0.18s, background-color 0.18s, color 0.18s;
+    }
+    .option-label:hover {
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+    .option-label.selected {
+      border-color: var(--text);
+      background-color: var(--text);
+      color: #000000;
+    }
+
+    /* Radio dot */
+    .radio-ring {
+      width: 20px; height: 20px;
+      border: 1.5px solid #444;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.18s;
+    }
+    .option-label.selected .radio-ring { border-color: #000; }
+    .radio-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #000;
+      display: none;
+    }
+    .option-label.selected .radio-dot { display: block; }
+
+    /* Checkbox */
+    .check-box {
+      width: 20px; height: 20px;
+      border: 1.5px solid #444;
+      border-radius: 5px;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.18s;
+    }
+    .option-label.selected .check-box {
+      border-color: #000;
+      background-color: #000;
+    }
+    .check-icon { display: none; }
+    .option-label.selected .check-icon { display: block; }
+
+    /* ── Inputs ── */
+    .input-group { margin-bottom: 18px; }
+    .input-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+    .input-field {
+      width: 100%;
+      padding: 17px 20px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background-color: var(--surface);
+      color: var(--text);
+      font-size: 15px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+    .input-field::placeholder { color: var(--text-dim); }
+    .input-field:focus { outline: none; border-color: #555; }
+    input[type="date"] { color-scheme: dark; }
+
+    .error-msg {
+      font-size: 12.5px;
+      color: #ff5555;
+      margin-top: 8px;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background-color: var(--text);
+      color: #000000;
+      border: none;
+      padding: 16px 30px;
+      font-size: 15px;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: inherit;
+      letter-spacing: -0.01em;
+      transition: background-color 0.18s, transform 0.15s;
+      margin-top: 8px;
+    }
+    .btn:hover { background-color: #e0e0e0; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn:disabled { opacity: 0.45; pointer-events: none; }
+
+    /* ── Intro ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border: 1px solid #2a2a2a;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #555;
+      margin-bottom: 36px;
+    }
+    .badge-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #ffffff;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .intro-title {
+      font-size: 40px;
+      font-weight: 900;
+      line-height: 1.18;
+      letter-spacing: -0.04em;
+      margin-bottom: 28px;
+    }
+    .intro-title .accent { color: #ffffff; }
+
+    .intro-meta {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 48px;
+      flex-wrap: wrap;
+    }
+    .intro-meta-item {
+      font-size: 13px;
+      color: #555;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .intro-meta-item::before {
+      content: '';
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: #333;
+    }
+
+    /* ── Outro ── */
+    .outro-wrap {
+      padding: 32px 0;
+      text-align: left;
+    }
+    .outro-symbol {
+      font-size: 40px;
+      margin-bottom: 36px;
+      display: block;
+      letter-spacing: -0.05em;
+    }
+    .outro-title {
+      font-size: 38px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1.18;
+      margin-bottom: 20px;
+    }
+
+    /* ── Privacy Modal ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.88);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    .modal-overlay.open { display: flex; }
+
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(16px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .modal-box {
+      background: var(--surface);
+      border: 1px solid #222;
+      border-radius: 16px;
+      padding: 36px;
+      width: 100%;
+      max-width: 480px;
+      max-height: 88vh;
+      overflow-y: auto;
+      animation: modalIn 0.3s ease;
+    }
+    .modal-title {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 24px;
+    }
+
+    .privacy-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-bottom: 24px;
+    }
+    .privacy-table th,
+    .privacy-table td {
+      padding: 11px 14px;
+      border: 1px solid #1e1e1e;
+      text-align: left;
+      vertical-align: top;
+    }
+    .privacy-table th {
+      background: #0d0d0d;
+      color: #666;
+      font-weight: 600;
+      width: 36%;
+    }
+    .privacy-table td {
+      background: var(--surface);
+      color: #bbb;
+    }
+
+    .agree-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: #bbb;
+      margin-bottom: 28px;
+    }
+    .agree-label input {
+      width: 17px; height: 17px;
+      accent-color: #fff;
+      cursor: pointer;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .btn-cancel {
+      background: transparent;
+      color: #666;
+      border: 1px solid #2a2a2a;
+      padding: 12px 22px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.18s;
+    }
+    .btn-cancel:hover { border-color: #444; color: #aaa; }
+    .btn-confirm {
+      background: #fff;
+      color: #000;
+      border: none;
+      padding: 12px 22px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.18s;
+    }
+    .btn-confirm:hover { background: #e0e0e0; }
+
+    /* ── Responsive ── */
+    @media (max-width: 480px) {
+      .intro-title { font-size: 30px; }
+      h1 { font-size: 22px; }
+      .survey-wrap { padding: 40px 16px 60px; }
+      .modal-box { padding: 24px; }
+    }
+  </style>
 </head>
 <body>
 
-<!-- 랜딩 페이지 -->
-<div class="page" id="pageLanding">
-  <div class="landing-tap-zone" onclick="showChecklist()"></div>
-</div>
+<div class="survey-wrap">
 
-<!-- 체크리스트 페이지 --><div class="page hidden" id="pageChecklist">
-  <div class="cl-wrap">
-
-    <!-- 1. Hero Section -->
-    <section class="cl-hero">
-      <div class="cl-hero-nav">
-        <button class="cl-back" onclick="hideChecklist()">
-          <i class="ph ph-arrow-left"></i>
-          <span>돌아가기</span>
-        </button>
-        <button class="cl-reset-top" id="clResetTopBtn" type="button">
-          <i class="ph ph-arrow-counter-clockwise"></i>
-          <span>초기화</span>
-        </button>
-      </div>
-
-      <div class="cl-hero-content">
-        <h1>유형 체크지</h1>
-        <p>각 문항을 <strong>1~5점</strong>으로 체크하면<br>상위 유형이 자동으로 계산됩니다.</p>
-      </div>
-
-      <div class="cl-legend">
-        <span class="legend-item"><i class="ph-fill ph-number-circle-one"></i> 전혀 아님</span>
-        <span class="legend-divider"></span>
-        <span class="legend-item"><i class="ph-fill ph-number-circle-three"></i> 보통</span>
-        <span class="legend-divider"></span>
-        <span class="legend-item"><i class="ph-fill ph-number-circle-five"></i> 매우 맞음</span>
-      </div>
-    </section>
-
-    <!-- 2. Meta Section (Bento Grid Style) -->
-    <section class="cl-meta">
-      <div class="cl-field field-full">
-        <label for="clCheckDate"><i class="ph ph-calendar-blank"></i> 일시</label>
-        <input id="clCheckDate" type="datetime-local">
-      </div>
-      <div class="cl-field">
-        <label for="clUserName"><i class="ph ph-user"></i> 이름</label>
-        <input id="clUserName" type="text" placeholder="이름 입력">
-      </div>
-      <div class="cl-field">
-        <label for="clMbti"><i class="ph ph-brain"></i> MBTI</label>
-        <input id="clMbti" type="text" placeholder="예: INFP">
-      </div>
-      <div class="cl-field field-result field-full">
-        <input id="clSeedResult" type="hidden" placeholder="아직 데이터가 부족해요" readonly>
-      </div>
-    </section>
-
-    <!-- 3. Sticky Topbar (Glassmorphism) -->
-    <div class="cl-topbar">
-      <div class="cl-progress-card">
-        <div class="cl-progress-info">
-          <div class="progress-text">
-            <i class="ph ph-check-circle"></i>
-            <strong id="clProgressText">진행률</strong>
-          </div>
-          <span id="clPercentText">0%</span>
-        </div>
-        <div class="cl-bar"><span id="clProgressBar"></span></div>
-        <div class="cl-badge-row">
-          <span class="cl-mini"><i class="ph ph-cloud-check"></i> 자동 저장중</span>
-          <span class="cl-mini"><i class="ph ph-calculator"></i> 실시간 계산중</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- 4. Main Questions Area -->
-    <main id="clSections"></main>
-
-    <!-- 5. Actions Area -->
-    <div class="cl-actions">
-      <button class="cl-btn-main" id="clSubmitBtn" type="button">
-        결과 제출하기 <i class="ph ph-paper-plane-right"></i>
-      </button>
-      <button class="cl-btn-sub" id="clResetBtn" type="button">
-        <i class="ph ph-arrow-counter-clockwise"></i> 초기화
-      </button>
-    </div>
-
+  <!-- Progress -->
+  <div class="progress-bar-container" id="progressContainer" style="display:none;">
+    <div class="progress-bar" id="progressBar"></div>
   </div>
 
-  <button class="cl-fab-top" id="clTopBtn" type="button" aria-label="맨 위로">
-    <i class="ph ph-arrow-up"></i>
-  </button>
-</div>
+  <!-- ──────────────────── STEP 0 : Intro ──────────────────── -->
+  <div class="step active" id="step-0">
+    <div class="badge"><span class="badge-dot"></span>Ventus Survey 2026</div>
+    <h1 class="intro-title">문화티켓<br>월구독권<br>서비스 기획</h1>
+    <p class="desc">문화플랫폼 <strong style="color:#fff">벤투스</strong>에서 2030 청년들을 대상으로 문화티켓 월구독권 서비스를 기획 중입니다‼️
 
-<!-- 체크리스트 결과 차트 -->
-<div class="cl-chart-overlay" id="clChartModal">
-  <div class="cl-chart-sheet">
-    <div class="cl-chart-header">
-      <div class="cl-chart-title">나의 현실 속 능력치는?</div>
+      여러분이 더 가까이에서 즐겁고 유익한 여가를 즐길 수 있도록 만들어가고자 합니다 😃</p>
+    <div class="intro-meta">
+      <span class="intro-meta-item">소요시간 약 3분</span>
+      <span class="intro-meta-item">총 8문항</span>
     </div>
-    <div class="cl-chart-canvas-wrap">
-      <canvas id="clRadarChart"></canvas>
+    <button class="btn" onclick="nextStep(0, 1)">시작하기</button>
+  </div>
+
+  <!-- ──────────────────── STEP 1 : Q1 인터뷰 동의 ──────────────────── -->
+  <div class="step" id="step-1">
+    <div class="step-num">01 / 08</div>
+    <h1>인터뷰 참여에 동의하시나요?</h1>
+    <div class="notice">
+      신청자에 한하여 인터뷰가 진행될 시 <strong>경품 전달</strong>이 가능합니다.<br>
+      인터뷰 진행 시 영상 촬영은 일체 진행되지 않으며,<br>본인 동의 하에 <strong>녹음만</strong>이 진행됨을 밝힙니다.
     </div>
-    <div class="cl-chart-rank" id="clChartRank"></div>
-    <div class="cl-chart-btns">
-      <button class="cl-chart-btn-sub" id="clChartCloseBtn">처음으로</button>
+    <div id="q1-options">
+      <div class="option-label" onclick="selectRadio(this, 'q1', '예', 1, 2)">
+        <span class="radio-ring"><span class="radio-dot"></span></span>
+        <span>예, 동의합니다</span>
+      </div>
+      <div class="option-label" onclick="selectRadio(this, 'q1', '아니오', 1, 2)">
+        <span class="radio-ring"><span class="radio-dot"></span></span>
+        <span>아니오, 동의하지 않습니다</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ──────────────────── STEP 2 : Q2 참여한 행사 ──────────────────── -->
+  <div class="step" id="step-2">
+    <div class="step-num">02 / 08</div>
+    <h1>광주에서 참여해본<br>문화행사를 골라주세요</h1>
+    <p class="desc">복수 선택 가능합니다</p>
+    <div id="q2-options">
+      <div class="option-label" onclick="toggleCheck(this, 'q2', '전시회/팝업')">
+        <span class="check-box"><svg class="check-icon" width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span>전시회 / 팝업</span>
+      </div>
+      <div class="option-label" onclick="toggleCheck(this, 'q2', '뮤지컬/연극/콘서트/음악회')">
+        <span class="check-box"><svg class="check-icon" width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span>뮤지컬 / 연극 / 콘서트 / 음악회</span>
+      </div>
+      <div class="option-label" onclick="toggleCheck(this, 'q2', '영화')">
+        <span class="check-box"><svg class="check-icon" width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span>영화</span>
+      </div>
+      <div class="option-label" onclick="toggleCheck(this, 'q2', '공예/원데이클래스')">
+        <span class="check-box"><svg class="check-icon" width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span>공예 / 원데이클래스</span>
+      </div>
+      <div class="option-label" onclick="toggleCheck(this, 'q2', '동호회(운동 등)')">
+        <span class="check-box"><svg class="check-icon" width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span>동호회 (운동 등)</span>
+      </div>
+      <div class="option-label" onclick="toggleCheck(this, 'q2', '온라인 소모임(맛집,카페,노래방 등)')">
+        <span class="check-box"><svg class="check-icon" width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span>온라인 소모임 (맛집, 카페, 노래방 등)</span>
+      </div>
+      <div class="option-label" onclick="toggleCheck(this, 'q2', '기타')">
+        <span class="check-box"><svg class="check-icon" width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span>기타</span>
+      </div>
+    </div>
+    <button class="btn" onclick="goTo(2, 3)">다음</button>
+  </div>
+
+  <!-- ──────────────────── STEP 3 : Q3 참여하고 싶은 행사 ──────────────────── -->
+  <div class="step" id="step-3">
+    <div class="step-num">03 / 08</div>
+    <h1>광주에서 참여하고 싶은<br>문화행사를 골라주세요</h1>
+    <p class="desc">복수 선택 가능합니다</p>
+    <div id="q3-options">
+      <div class="option-label" onclick="toggleCheck(this, 'q3', '전시회/팝업')">
+        <span class="check-box"><svg class="check-icon" width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span>전시회 / 팝업</span>
+      </div>
+      <div class="option-label" onclick="toggleCheck(this, 'q3', '뮤지컬/연극/콘서트/음악회')">
+        <span class="check-box"><svg class="check-icon" width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span>뮤지컬 / 연극 / 콘서트 / 음악회</span>
+      </div>
+      <div class="option-label" onclick="toggleCheck(this, 'q3', '영화')">
+        <span class="check-box"><svg class="check-icon" width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span>영화</span>
+      </div>
+      <div class="option-label" onclick="toggleCheck(this, 'q3', '공예/원데이클래스')">
+        <span class="check-box"><svg class="check-icon" width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span>공예 / 원데이클래스</span>
+      </div>
+      <div class="option-label" onclick="toggleCheck(this, 'q3', '동호회(운동 등)')">
+        <span class="check-box"><svg class="check-icon" width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span>동호회 (운동 등)</span>
+      </div>
+      <div class="option-label" onclick="toggleCheck(this, 'q3', '온라인 소모임(맛집,카페,노래방 등)')">
+        <span class="check-box"><svg class="check-icon" width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span>온라인 소모임 (맛집, 카페, 노래방 등)</span>
+      </div>
+      <div class="option-label" onclick="toggleCheck(this, 'q3', '기타')">
+        <span class="check-box"><svg class="check-icon" width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span>기타</span>
+      </div>
+    </div>
+    <button class="btn" onclick="goTo(3, 4)">다음</button>
+  </div>
+
+  <!-- ──────────────────── STEP 4 : Q4 무료 티켓 의향 ──────────────────── -->
+  <div class="step" id="step-4">
+    <div class="step-num">04 / 08</div>
+    <h1>무료 문화티켓을 받으실<br>의사가 있으신가요?</h1>
+    <div id="q4-options">
+      <div class="option-label" onclick="selectRadio(this, 'q4', '네', 4, 5)">
+        <span class="radio-ring"><span class="radio-dot"></span></span>
+        <span>네, 있습니다</span>
+      </div>
+      <div class="option-label" onclick="selectRadio(this, 'q4', '아니오', 4, 5)">
+        <span class="radio-ring"><span class="radio-dot"></span></span>
+        <span>아니오, 없습니다</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ──────────────────── STEP 5 : Q5 인터뷰 일정 ──────────────────── -->
+  <div class="step" id="step-5">
+    <div class="step-num">05 / 08</div>
+    <h1>인터뷰 일정을 선택해 주세요</h1>
+    <p class="desc">한 달 이내의 날짜를 선택해 주세요</p>
+    <div class="input-group">
+      <input type="date" class="input-field" id="q5-date" min="" max="">
+      <div class="error-msg" id="q5-error" style="display:none;">날짜를 선택해 주세요.</div>
+    </div>
+    <button class="btn" onclick="nextDate()">다음</button>
+  </div>
+
+  <!-- ──────────────────── STEP 6 : Q6,7,8 기본 정보 ──────────────────── -->
+  <div class="step" id="step-6">
+    <div class="step-num">06–08 / 08</div>
+    <h1>기본 정보를 입력해 주세요</h1>
+    <div class="input-group">
+      <div class="input-label">이름</div>
+      <input type="text" class="input-field" id="q6-name" placeholder="홍길동">
+    </div>
+    <div class="input-group">
+      <div class="input-label">나이</div>
+      <input type="number" class="input-field" id="q7-age" placeholder="25" min="1" max="99">
+    </div>
+    <div class="input-group">
+      <div class="input-label">연락처</div>
+      <input type="tel" class="input-field" id="q8-tel" placeholder="010-0000-0000">
+    </div>
+    <div class="error-msg" id="q6-error" style="display:none;">모든 항목을 빠짐없이 입력해 주세요.</div>
+    <button class="btn" onclick="openPrivacyModal()">제출하기</button>
+  </div>
+
+  <!-- ──────────────────── STEP 7 : Outro ──────────────────── -->
+  <div class="step" id="step-7">
+    <div class="outro-wrap">
+      <span class="outro-symbol">✦</span>
+      <h1 class="outro-title">제출이<br>완료되었습니다</h1>
+      <p class="desc">소중한 시간을 내어 참여해 주셔서 감사합니다.<br>보내주신 의견을 바탕으로 더 발전하는<br>서비스가 되겠습니다 😃</p>
+    </div>
+  </div>
+
+</div><!-- /survey-wrap -->
+
+<!-- ──────────────────── Privacy Modal ──────────────────── -->
+<div class="modal-overlay" id="privacyModal">
+  <div class="modal-box">
+    <h3 class="modal-title">개인정보 수집 및 이용 동의</h3>
+    <table class="privacy-table">
+      <tbody>
+      <tr>
+        <th>수집하는 항목</th>
+        <td>이름, 연락처</td>
+      </tr>
+      <tr>
+        <th>수집 및 이용 목적</th>
+        <td>이벤트 진행 및 당첨자 안내</td>
+      </tr>
+      <tr>
+        <th>보유 및 이용기간</th>
+        <td><strong style="color:#ddd">당첨자 발표 후 1달간 보관</strong></td>
+      </tr>
+      </tbody>
+    </table>
+    <label class="agree-label">
+      <input type="checkbox" id="privacyConsent">
+      <span>개인정보 수집 및 이용에 동의합니다. (필수)</span>
+    </label>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">취소</button>
+      <button class="btn-confirm" onclick="confirmAndSubmit()">확인 및 제출</button>
     </div>
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-<script src="js/app.js"></script>
+<script src="./js/survey.js"></script>
+
 </body>
 </html>
