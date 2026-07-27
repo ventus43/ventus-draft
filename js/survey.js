@@ -1,4 +1,4 @@
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxr6uuEcBUJdIkod37QZuzUl0LSuGES3zWIvhqbEf6ogp9jSie1JvxKvvDoBx9Z7A3VGA/exec'; // ← 배포 후 교체
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwj-Oj7SxvZPefNuf3C2wKrXSlkacpzTI4rQ0v2ER2NYEi7YGOGZ3v_KUgbq75ZQjCLhA/exec'; // ← 배포 후 교체
 
 const answers = { q1: '', q2: [], q3: [], q4: '', q5: '', q6: '', q7: '', q8: '' };
 const TOTAL = 7;
