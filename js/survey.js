@@ -1,4 +1,4 @@
-const APPS_SCRIPT_URL = (typeof process !== 'undefined' ? process.env.APPS_SCRIPT_URL : '') || '';
+const APPS_SCRIPT_URL = 'YOUR_DEPLOYMENT_URL_HERE'; // ← 배포 후 교체
 
 const answers = { q1: '', q2: [], q3: [], q4: '', q5: '', q6: '', q7: '', q8: '' };
 const TOTAL = 7;
@@ -104,8 +104,9 @@ function confirmAndSubmit() {
 }
 
 /* ── Google Sheets ── */
-async function sendToSheets() {
+function sendToSheets() {
   const payload = {
+    type:               'survey',
     타임스탬프:           new Date().toLocaleString('ko-KR'),
     인터뷰동의:           answers.q1,
     참여한문화행사:        answers.q2.join(', '),
@@ -118,15 +119,13 @@ async function sendToSheets() {
     개인정보동의:         '동의'
   };
 
-  try {
-    await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      body: JSON.stringify(payload),
-    });
-  } catch (e) {
-    console.error('전송 오류:', e);
-  }
+  if (!APPS_SCRIPT_URL) return;
+  fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify(payload)
+  }).catch(err => console.error('시트 전송 실패:', err));
 }
 
 /* ── 데이터 초기화 및 첫 화면 이동 ── */
