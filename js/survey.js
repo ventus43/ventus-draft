@@ -8,18 +8,24 @@ document.addEventListener('DOMContentLoaded', () => {
   const d = document.getElementById('q5-date');
   const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
   const maxDate  = new Date(); maxDate.setMonth(maxDate.getMonth() + 1);
-  const fmt = dt => dt.toISOString().split('T')[0];
-  d.min = fmt(tomorrow);
-  d.max = fmt(maxDate);
+  const fmtDate = dt => {
+    const pad = n => String(n).padStart(2, '0');
+    return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}`;
+  };
+  d.min = fmtDate(tomorrow);
+  d.max = fmtDate(maxDate);
 
   document.getElementById('privacyModal').addEventListener('click', e => {
     if (e.target === e.currentTarget) closeModal();
   });
+
+  document.getElementById('q8-tel').addEventListener('input', function () { formatTel(this); });
 });
 
 /* ── Navigation ── */
 function nextStep(from, to) {
   document.getElementById('progressContainer').style.display = 'block';
+  document.getElementById('homeBtn').style.display = 'flex';
   goTo(from, to);
 }
 
@@ -56,13 +62,15 @@ function toggleCheck(el, key, value) {
   }
 }
 
-/* ── Date ── */
+/* ── Date + Time ── */
 function nextDate() {
-  const val = document.getElementById('q5-date').value;
+  const dateVal = document.getElementById('q5-date').value;
+  const timeVal = document.getElementById('q5-time').value.trim();
   const err = document.getElementById('q5-error');
-  if (!val) { err.style.display = 'block'; return; }
+  if (!dateVal || !timeVal) { err.style.display = 'block'; return; }
   err.style.display = 'none';
-  answers.q5 = val;
+  const [y, m, d] = dateVal.split('-');
+  answers.q5 = `${y}년 ${parseInt(m)}월 ${parseInt(d)}일 ${timeVal}`;
   goTo(5, 6);
 }
 
@@ -90,6 +98,7 @@ function confirmAndSubmit() {
     return;
   }
   closeModal();
+  renderSummary();
   goTo(6, 7);
   sendToSheets();
 }
@@ -112,11 +121,66 @@ async function sendToSheets() {
   try {
     await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
+      mode: 'no-cors',
       body: JSON.stringify(payload),
-      headers: { 'Content-Type': 'application/json' }
     });
   } catch (e) {
     console.error('전송 오류:', e);
+  }
+}
+
+/* ── 데이터 초기화 및 첫 화면 이동 ── */
+function resetSurvey() {
+  answers.q1 = ''; answers.q2 = []; answers.q3 = []; answers.q4 = '';
+  answers.q5 = ''; answers.q6 = ''; answers.q7 = ''; answers.q8 = '';
+
+  document.querySelectorAll('.option-label.selected').forEach(el => el.classList.remove('selected'));
+
+  ['q5-date', 'q5-time', 'q6-name', 'q7-age', 'q8-tel'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('q5-error').style.display = 'none';
+  document.getElementById('q6-error').style.display = 'none';
+
+  document.getElementById('progressContainer').style.display = 'none';
+  document.getElementById('progressBar').style.width = '0%';
+  document.getElementById('homeBtn').style.display = 'none';
+
+  document.getElementById('privacyModal').classList.remove('open');
+  document.getElementById('privacyConsent').checked = false;
+
+  document.querySelector('.step.active')?.classList.remove('active');
+  document.getElementById('step-0').classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ── 제출 결과 요약 렌더링 ── */
+function renderSummary() {
+  const rows = [
+    { label: '인터뷰 동의',           value: answers.q1 },
+    { label: '참여한 문화행사',        value: answers.q2.join(', ') },
+    { label: '참여하고 싶은 문화행사', value: answers.q3.join(', ') },
+    { label: '무료 티켓 수령 의향',    value: answers.q4 },
+    { label: '인터뷰 일정',           value: answers.q5 },
+    { label: '이름',                  value: answers.q6 },
+    { label: '나이',                  value: answers.q7 },
+    { label: '연락처',                value: answers.q8 },
+  ];
+  document.getElementById('summaryBlock').innerHTML = rows.map(r =>
+    `<div class="summary-row">
+      <span class="summary-label">${r.label}</span>
+      <span class="summary-value">${r.value || '-'}</span>
+    </div>`
+  ).join('');
+}
+
+/* ── 전화번호 자동 포맷 ── */
+function formatTel(el) {
+  const digits = el.value.replace(/\D/g, '').slice(0, 11);
+  if (digits.length === 11) {
+    el.value = digits.slice(0, 3) + '-' + digits.slice(3, 7) + '-' + digits.slice(7);
+  } else {
+    el.value = digits;
   }
 }
 
@@ -129,3 +193,5 @@ window.nextDate         = nextDate;
 window.openPrivacyModal = openPrivacyModal;
 window.closeModal       = closeModal;
 window.confirmAndSubmit = confirmAndSubmit;
+window.resetSurvey      = resetSurvey;
+window.formatTel        = formatTel;
