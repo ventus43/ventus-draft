@@ -1,7 +1,7 @@
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwj-Oj7SxvZPefNuf3C2wKrXSlkacpzTI4rQ0v2ER2NYEi7YGOGZ3v_KUgbq75ZQjCLhA/exec'; // ← 배포 후 교체
 
-const answers = { q1: '', q2: [], q3: [], q4: '', q5: '', q6: '', q7: '', q8: '' };
-const TOTAL = 7;
+const answers = { q2: [], q3: [], q4: '', q5: '', q6: '', q7: '', q8: '' };
+const TOTAL = 3;
 
 /* ── Date range setup ── */
 document.addEventListener('DOMContentLoaded', () => {
@@ -40,7 +40,7 @@ function goTo(from, to) {
 
 function setProgress(step) {
   if (step === 0) return;
-  const pct = step === 7 ? 100 : Math.round(((step - 1) / TOTAL) * 100);
+  const pct = step === 4 ? 100 : Math.round(((step - 1) / TOTAL) * 100);
   document.getElementById('progressBar').style.width = pct + '%';
 }
 
@@ -62,26 +62,18 @@ function toggleCheck(el, key, value) {
   }
 }
 
-/* ── Date + Time ── */
-function nextDate() {
+/* ── User info + 인터뷰 일정 + open modal ── */
+function openPrivacyModal() {
+  const name    = document.getElementById('q6-name').value.trim();
+  const age     = document.getElementById('q7-age').value.trim();
+  const tel     = document.getElementById('q8-tel').value.trim();
   const dateVal = document.getElementById('q5-date').value;
   const timeVal = document.getElementById('q5-time').value.trim();
-  const err = document.getElementById('q5-error');
-  if (!dateVal || !timeVal) { err.style.display = 'block'; return; }
+  const err     = document.getElementById('q6-error');
+  if (!name || !age || !tel || !dateVal || !timeVal) { err.style.display = 'block'; return; }
   err.style.display = 'none';
   const [y, m, d] = dateVal.split('-');
   answers.q5 = `${y}년 ${parseInt(m)}월 ${parseInt(d)}일 ${timeVal}`;
-  goTo(5, 6);
-}
-
-/* ── User info + open modal ── */
-function openPrivacyModal() {
-  const name = document.getElementById('q6-name').value.trim();
-  const age  = document.getElementById('q7-age').value.trim();
-  const tel  = document.getElementById('q8-tel').value.trim();
-  const err  = document.getElementById('q6-error');
-  if (!name || !age || !tel) { err.style.display = 'block'; return; }
-  err.style.display = 'none';
   answers.q6 = name; answers.q7 = age; answers.q8 = tel;
   document.getElementById('privacyModal').classList.add('open');
 }
@@ -99,7 +91,7 @@ function confirmAndSubmit() {
   }
   closeModal();
   renderSummary();
-  goTo(6, 7);
+  goTo(3, 4);
   sendToSheets();
 }
 
@@ -108,7 +100,6 @@ function sendToSheets() {
   const payload = {
     type:               'survey',
     타임스탬프:           new Date().toLocaleString('ko-KR'),
-    인터뷰동의:           answers.q1,
     참여한문화행사:        answers.q2.join(', '),
     참여하고싶은문화행사:  answers.q3.join(', '),
     무료티켓의향:          answers.q4,
@@ -130,15 +121,14 @@ function sendToSheets() {
 
 /* ── 데이터 초기화 및 첫 화면 이동 ── */
 function resetSurvey() {
-  answers.q1 = ''; answers.q2 = []; answers.q3 = []; answers.q4 = '';
+  answers.q2 = []; answers.q3 = []; answers.q4 = '';
   answers.q5 = ''; answers.q6 = ''; answers.q7 = ''; answers.q8 = '';
 
-  document.querySelectorAll('.option-label.selected').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('.option-label.selected, .category-card.selected').forEach(el => el.classList.remove('selected'));
 
   ['q5-date', 'q5-time', 'q6-name', 'q7-age', 'q8-tel'].forEach(id => {
     document.getElementById(id).value = '';
   });
-  document.getElementById('q5-error').style.display = 'none';
   document.getElementById('q6-error').style.display = 'none';
 
   document.getElementById('progressContainer').style.display = 'none';
@@ -156,7 +146,6 @@ function resetSurvey() {
 /* ── 제출 결과 요약 렌더링 ── */
 function renderSummary() {
   const rows = [
-    { label: '인터뷰 동의',           value: answers.q1 },
     { label: '참여한 문화행사',        value: answers.q2.join(', ') },
     { label: '참여하고 싶은 문화행사', value: answers.q3.join(', ') },
     { label: '무료 티켓 수령 의향',    value: answers.q4 },
@@ -188,7 +177,6 @@ window.nextStep         = nextStep;
 window.goTo             = goTo;
 window.selectRadio      = selectRadio;
 window.toggleCheck      = toggleCheck;
-window.nextDate         = nextDate;
 window.openPrivacyModal = openPrivacyModal;
 window.closeModal       = closeModal;
 window.confirmAndSubmit = confirmAndSubmit;
